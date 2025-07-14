@@ -1,6 +1,10 @@
-<img alt="Ezly: An easy API wrapper for Izly" src="https://raw.githubusercontent.com/LiterateInk/Ezly/index/.github/assets/banner.svg" width="100%" />
+<img alt="Ezly: An easy API wrapper for Izly" src=".github/assets/banner.svg" width="100%" />
 
-*This library **is not** affiliated with [Izly](https://www.izly.fr/) or [Les Crous](https://www.lescrous.fr/) in any way.*
+_This library **is not** affiliated with [Izly](https://www.izly.fr/) or [Les Crous](https://www.lescrous.fr/) in any way._
+
+## What is "Izly" ?
+
+Izly is a French electronic wallet service that allows students to pay for their meals in university restaurants, cafeterias, and other services.
 
 ## Installation
 
@@ -27,3 +31,7 @@ You can find documentation with guides at [docs.literate.ink/ezly](https://docs.
 If it's not enough you can also take a look at the [`examples`](https://github.com/LiterateInk/Ezly/tree/js/examples) folder in the GitHub repository for inspiration.
 
 If none of those are helpful, you can always [open an issue](https://github.com/LiterateInk/Ezly/issues) to ask for help or join the [LiterateInk Discord server](https://literate.ink/discord).
+
+## Acknowledgements
+
+- [`IzlyProtocolDocumentation`](https://github.com/IzlyOpenSource/IzlyProtocolDocumentation) by [`@IzlyOpenSource`](https://github.com/IzlyOpenSource)
