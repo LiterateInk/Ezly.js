@@ -1,9 +1,10 @@
-import { defaultFetcher, type Request, type Fetcher, findValueBetween } from "@literate.ink/utilities";
-import { CLIENT_TYPE, SERVICE_VERSION, SOAP_URL, SOAP_USER_AGENT } from "~/core/constants";
-
-import { xml } from "~/core/xml";
+import { defaultFetcher, type Fetcher, findValueBetween, type Request } from "@literate.ink/utilities";
 import { XMLParser } from "fast-xml-parser";
 
+import { CLIENT_TYPE, SERVICE_VERSION, SOAP_URL, SOAP_USER_AGENT } from "~/core/constants";
+import { xml } from "~/core/xml";
+
+// eslint-disable-next-line ts/explicit-function-return-type
 export const login = async (identifier: string, secret: string, fetcher: Fetcher = defaultFetcher) => {
   const body = xml.header + xml.envelope(`
     <Logon xmlns="Service" id="o0" c:root="1">
@@ -20,16 +21,16 @@ export const login = async (identifier: string, secret: string, fetcher: Fetcher
   `);
 
   const request: Request = {
-    url: SOAP_URL,
-    headers: {
-      "User-Agent": SOAP_USER_AGENT,
-      "SOAPAction": "Service/Logon",
-      "Content-Type": "text/xml;charset=utf-8",
-      "clientVersion": SERVICE_VERSION,
-      "smoneyClientType": CLIENT_TYPE
-    },
     content: body,
-    method: "POST"
+    headers: {
+      "clientVersion": SERVICE_VERSION,
+      "Content-Type": "text/xml;charset=utf-8",
+      "smoneyClientType": CLIENT_TYPE,
+      "SOAPAction": "Service/Logon",
+      "User-Agent": SOAP_USER_AGENT
+    },
+    method: "POST",
+    url: SOAP_URL
   };
 
   const response = await fetcher(request);
@@ -43,8 +44,8 @@ export const login = async (identifier: string, secret: string, fetcher: Fetcher
   const decoded = xml.from_entities(result);
   const parser = new XMLParser({
     numberParseOptions: {
-      leadingZeros: true,
       hex: true,
+      leadingZeros: true,
       skipLike: /[0-9]/
     }
   });
@@ -55,7 +56,7 @@ export const login = async (identifier: string, secret: string, fetcher: Fetcher
   }
 
   return {
-    uid: parsed.UserData.UID as string,
-    salt: parsed.UserData.SALT as string
+    salt: parsed.UserData.SALT as string,
+    uid: parsed.UserData.UID as string
   };
 };

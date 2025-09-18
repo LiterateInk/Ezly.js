@@ -1,8 +1,8 @@
+import { toString as qrcode } from "qrcode";
 import * as izly from "../src";
 import { persist, read } from "./_persisted-session";
-import { toString as qrcode } from "qrcode";
 
-void async function main () {
+void (async function main() {
   const identification = await read();
   const data = izly.qrPay(identification);
 
@@ -12,4 +12,4 @@ void async function main () {
   });
 
   await persist(identification);
-}();
+}());

@@ -2,7 +2,7 @@ import * as izly from "../src";
 import { credentials } from "./_credentials";
 import { persist } from "./_persisted-session";
 
-void async function main () {
+void (async function main() {
   const { uid } = await izly.login(credentials.identifier, credentials.secret);
 
   // NOTE: `prompt` is only available on Bun
@@ -11,7 +11,7 @@ void async function main () {
   if (!url) throw new Error("No URL provided");
 
   const activationURL = await izly.extractActivationURL(url);
-  const { identification, profile, configuration, balance } = await izly.tokenize(activationURL);
+  const { balance, configuration, identification, profile } = await izly.tokenize(activationURL);
 
   // Let's save the auth object for usage in other files without
   // re-doing the whole authentication...
@@ -36,4 +36,4 @@ void async function main () {
   console.warn("Note that there's no way to retrieve again 'identification' so make sure to store it if you need to do other requests.");
 
   console.log("\nAnyway, since you're in the examples, I've exported the object in a JSON file so you can run other examples without re-doing the whole authentication process !");
-}();
+}());

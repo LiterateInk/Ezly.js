@@ -1,13 +1,13 @@
 export type Configuration = Readonly<{
-  currency: string
+  currency: string;
 
-  paymentMinimum: number
-  paymentMaximum: number
-  paymentPartMinimum: number
-  paymentPartMaximum: number
+  moneyInMaximum: number;
+  moneyInMinimum: number;
+  moneyOutMaximum: number;
+  moneyOutMinimum: number;
 
-  moneyInMinimum: number
-  moneyInMaximum: number
-  moneyOutMinimum: number
-  moneyOutMaximum: number
+  paymentMaximum: number;
+  paymentMinimum: number;
+  paymentPartMaximum: number;
+  paymentPartMinimum: number;
 }>;

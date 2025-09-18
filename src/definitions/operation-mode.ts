@@ -1,4 +1,4 @@
 export enum OperationMode {
-  Online = 1,
-  Offline = 2
+  Offline = 2,
+  Online = 1
 }

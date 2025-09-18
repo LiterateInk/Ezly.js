@@ -1,37 +1,36 @@
-import { defaultFetcher, type Fetcher, type Request } from "@literate.ink/utilities";
+import type { BankCode } from "~/definitions/bank-code";
 
-import { ReauthenticateError, type Configuration, type Identification, type Profile } from "~/models";
+import type { ClientUserRole } from "~/definitions/client-user-role";
+import type { ClientUserStatus } from "~/definitions/client-user-status";
+import type { Error as ServerError } from "~/definitions/error";
+
+import type { LimitMoneyIn } from "~/definitions/limit-money-in";
+import type { UP } from "~/definitions/up";
+import { defaultFetcher, type Fetcher, type Request } from "@literate.ink/utilities";
 import { CLIENT_TYPE, createRouteREST, SERVICE_VERSION } from "~/core/constants";
 import { decodeBalance } from "~/decoders/balance";
+import { type Configuration, type Identification, type Profile, ReauthenticateError } from "~/models";
 
-import type { ClientUserStatus } from "~/definitions/client-user-status";
-import type { ClientUserRole } from "~/definitions/client-user-role";
-import type { LimitMoneyIn } from "~/definitions/limit-money-in";
-import type { Error as ServerError } from "~/definitions/error";
-import type { BankCode } from "~/definitions/bank-code";
-import type { UP } from "~/definitions/up";
-
+// eslint-disable-next-line ts/explicit-function-return-type
 export const information = async (identification: Identification, fetcher: Fetcher = defaultFetcher) => {
   const request: Request = {
-    url: createRouteREST("GetLogonInfos"),
     headers: {
-      version: "2.0",
+      Authorization: `Bearer ${identification.accessToken}`,
       channel: "AIZ",
-      format: "T",
-      model: "A",
       clientVersion: SERVICE_VERSION,
-      smoneyClientType: CLIENT_TYPE,
+      format: "T",
       language: "fr",
+      model: "A",
+      smoneyClientType: CLIENT_TYPE,
       userId: identification.identifier,
-      "Authorization": `Bearer ${identification.accessToken}`
-    }
+      version: "2.0"
+    },
+    url: createRouteREST("GetLogonInfos")
   };
 
   const response = await fetcher(request);
-  const json = JSON.parse(response.content) as {
+  const json = JSON.parse(response.content) as ServerError | {
     GetLogonInfosResult: {
-      UP: UP
-
       Result: {
         Age: number;
         Alias: string;
@@ -52,7 +51,7 @@ export const information = async (identification: Identification, fetcher: Fetch
         OptInPartners: boolean;
         Role: ClientUserRole;
         Services: string[]; // NOTE: "Izly" is the only value I've seen
-        ServicesInfos: unknown | null; // TODO
+        ServicesInfos: null | unknown; // TODO
         SubscriptionDate: string;
         TarifUserId: number;
         TermsConditionsAgreementDate: string;
@@ -61,9 +60,11 @@ export const information = async (identification: Identification, fetcher: Fetch
         UserIdentifier: string;
         UserStatus: ClientUserStatus;
         ZipCode: string;
-      }
-    }
-  } | ServerError;
+      };
+
+      UP: UP;
+    };
+  };
 
   if ("ErrorMessage" in json) {
     if (json.Code === 140 || json.Code === 570)
@@ -75,25 +76,25 @@ export const information = async (identification: Identification, fetcher: Fetch
   const data = json.GetLogonInfosResult.Result;
 
   return {
+    balance: decodeBalance(json.GetLogonInfosResult.UP),
+
     configuration: {
       currency: data.Currency,
-      moneyInMinimum: data.LimitMoneyIn.Min,
       moneyInMaximum: data.LimitMoneyIn.Max,
-      moneyOutMinimum: data.LimitMoneyOut.Min,
+      moneyInMinimum: data.LimitMoneyIn.Min,
       moneyOutMaximum: data.LimitMoneyOut.Max,
-      paymentMinimum: data.LimitPayment.Min,
+      moneyOutMinimum: data.LimitMoneyOut.Min,
       paymentMaximum: data.LimitPayment.Max,
-      paymentPartMinimum: data.LimitPaymentPart.Min,
-      paymentPartMaximum: data.LimitPaymentPart.Max
+      paymentMinimum: data.LimitPayment.Min,
+      paymentPartMaximum: data.LimitPaymentPart.Max,
+      paymentPartMinimum: data.LimitPaymentPart.Min
     } as Configuration,
 
     profile: {
       email: data.Email,
       firstName: data.FirstName,
-      lastName: data.LastName,
-      identifier: data.UserIdentifier
-    } as Profile,
-
-    balance: decodeBalance(json.GetLogonInfosResult.UP)
+      identifier: data.UserIdentifier,
+      lastName: data.LastName
+    } as Profile
   };
 };

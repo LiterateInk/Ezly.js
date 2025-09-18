@@ -1,7 +1,7 @@
 export type Profile = Readonly<{
-  firstName: string
-  lastName: string
-  email: string
+  email: string;
+  firstName: string;
   /** an alias identifier */
-  identifier: string
+  identifier: string;
+  lastName: string;
 }>;

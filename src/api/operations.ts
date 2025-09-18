@@ -1,11 +1,11 @@
+import type { Error as ServerError } from "~/definitions/error";
+import type { HomePageOperation } from "~/definitions/home-page-operation";
 import { defaultFetcher, type Fetcher, type Request } from "@literate.ink/utilities";
 import { CLIENT_TYPE, createRouteREST, SERVICE_VERSION } from "~/core/constants";
 import { decodeFormattedDate } from "~/decoders/date";
-import type { HomePageOperation } from "~/definitions/home-page-operation";
-import { ReauthenticateError, type Identification, type Operation } from "~/models";
-import type { Error as ServerError } from "~/definitions/error";
-
 import { TransactionGroup } from "~/definitions/transaction-group";
+
+import { type Identification, type Operation, ReauthenticateError } from "~/models";
 export { TransactionGroup };
 
 /**
@@ -13,27 +13,27 @@ export { TransactionGroup };
  */
 export const operations = async (identification: Identification, group: TransactionGroup, limit = 15, fetcher: Fetcher = defaultFetcher): Promise<Array<Operation>> => {
   const request: Request = {
-    url: createRouteREST(`GetHomePageOperations?transactionGroup=${group}&top=${limit}`),
     headers: {
-      version: "2.0",
+      Authorization: `Bearer ${identification.accessToken}`,
       channel: "AIZ",
-      format: "T",
-      model: "A",
       clientVersion: SERVICE_VERSION,
-      smoneyClientType: CLIENT_TYPE,
+      format: "T",
       language: "fr",
-      userId: identification.identifier,
+      model: "A",
       sessionId: identification.sessionID,
-      "Authorization": `Bearer ${identification.accessToken}`
-    }
+      smoneyClientType: CLIENT_TYPE,
+      userId: identification.identifier,
+      version: "2.0"
+    },
+    url: createRouteREST(`GetHomePageOperations?transactionGroup=${group}&top=${limit}`)
   };
 
   const response = await fetcher(request);
-  const json = JSON.parse(response.content) as {
+  const json = JSON.parse(response.content) as ServerError | {
     GetHomePageOperationsResult: {
-      Result: Array<HomePageOperation>
-    }
-  } | ServerError;
+      Result: Array<HomePageOperation>;
+    };
+  };
 
   if ("ErrorMessage" in json) {
     if (json.Code === 140 || json.Code === 570)
@@ -43,12 +43,12 @@ export const operations = async (identification: Identification, group: Transact
   }
 
   return json.GetHomePageOperationsResult.Result.map((operation) => ({
-    id: operation.Id,
     amount: operation.Amount,
     date: decodeFormattedDate(operation.Date),
+    id: operation.Id,
     isCredit: operation.IsCredit,
     message: operation.Message,
-    type: operation.OperationType,
-    status: operation.Status
+    status: operation.Status,
+    type: operation.OperationType
   } satisfies Operation));
 };

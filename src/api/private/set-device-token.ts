@@ -1,7 +1,7 @@
-import { Identification } from "~/models";
-import { xml } from "~/core/xml";
-import { CLIENT_TYPE, SERVICE_VERSION, SOAP_URL, SOAP_USER_AGENT } from "~/core/constants";
+import type { Identification } from "~/models";
 import { defaultFetcher, type Fetcher, type Request } from "@literate.ink/utilities";
+import { CLIENT_TYPE, SERVICE_VERSION, SOAP_URL, SOAP_USER_AGENT } from "~/core/constants";
+import { xml } from "~/core/xml";
 
 export const setDeviceToken = async (identification: Identification, fetcher: Fetcher = defaultFetcher): Promise<void> => {
   const body = xml.header + xml.envelope(`
@@ -19,17 +19,17 @@ export const setDeviceToken = async (identification: Identification, fetcher: Fe
   `);
 
   const request: Request = {
-    url: SOAP_URL,
-    headers: {
-      "User-Agent": SOAP_USER_AGENT,
-      "SOAPAction": "Service/SetDeviceToken",
-      "Content-Type": "text/xml;charset=utf-8",
-      "clientVersion": SERVICE_VERSION,
-      "smoneyClientType": CLIENT_TYPE,
-      "Authorization": `Bearer ${identification.accessToken}`
-    },
     content: body,
-    method: "POST"
+    headers: {
+      "Authorization": `Bearer ${identification.accessToken}`,
+      "clientVersion": SERVICE_VERSION,
+      "Content-Type": "text/xml;charset=utf-8",
+      "smoneyClientType": CLIENT_TYPE,
+      "SOAPAction": "Service/SetDeviceToken",
+      "User-Agent": SOAP_USER_AGENT
+    },
+    method: "POST",
+    url: SOAP_URL
   };
 
   await fetcher(request);

@@ -1,5 +1,5 @@
 export enum ServiceType {
-  SMoney = 1,
+  G7 = 3,
   Izly = 2,
-  G7 = 3
+  SMoney = 1
 }

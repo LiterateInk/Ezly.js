@@ -1,38 +1,38 @@
+import type { Error as ServerError } from "~/definitions/error";
+import type { UP } from "~/definitions/up";
 import { defaultFetcher, type Fetcher, type Request } from "@literate.ink/utilities";
 import { CLIENT_TYPE, createRouteREST, SERVICE_VERSION } from "~/core/constants";
 import { decodeBalance } from "~/decoders/balance";
-import { ReauthenticateError, type Balance, type Identification } from "~/models";
-import type { Error as ServerError } from "~/definitions/error";
-import { UP } from "~/definitions/up";
+import { type Balance, type Identification, ReauthenticateError } from "~/models";
 
 export const balance = async (identification: Identification, fetcher: Fetcher = defaultFetcher): Promise<Balance> => {
   const request: Request = {
-    url: createRouteREST("IsSessionValid"),
-    method: "POST",
-    headers: {
-      version: "1.0",
-      channel: "AIZ",
-      format: "T",
-      model: "A",
-      clientVersion: SERVICE_VERSION,
-      smoneyClientType: CLIENT_TYPE,
-      language: "fr",
-      userId: identification.identifier,
-      sessionId: identification.sessionID,
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${identification.accessToken}`
-    },
     content: JSON.stringify({
       sessionId: identification.sessionID
-    })
+    }),
+    headers: {
+      "Authorization": `Bearer ${identification.accessToken}`,
+      "channel": "AIZ",
+      "clientVersion": SERVICE_VERSION,
+      "Content-Type": "application/json",
+      "format": "T",
+      "language": "fr",
+      "model": "A",
+      "sessionId": identification.sessionID,
+      "smoneyClientType": CLIENT_TYPE,
+      "userId": identification.identifier,
+      "version": "1.0"
+    },
+    method: "POST",
+    url: createRouteREST("IsSessionValid")
   };
 
   const response = await fetcher(request);
-  const json = JSON.parse(response.content) as {
+  const json = JSON.parse(response.content) as ServerError | {
     IsSessionValidResult: {
-      UP: UP
-    }
-  } | ServerError;
+      UP: UP;
+    };
+  };
 
   if ("ErrorMessage" in json) {
     if (json.Code === 140 || json.Code === 570)

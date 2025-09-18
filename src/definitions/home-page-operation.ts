@@ -6,7 +6,7 @@ export type HomePageOperation = Readonly<{
   Date: string;
   Id: number;
   IsCredit: boolean;
-  Message: string | null;
+  Message: null | string;
   OperationType: OperationType;
   Status: TransactionGroupStatus;
 }>;

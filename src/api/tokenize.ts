@@ -1,15 +1,16 @@
-import { defaultFetcher, type Fetcher, findValueBetween, getHeaderFromResponse, Request } from "@literate.ink/utilities";
-import { CLIENT_TYPE, SERVICE_VERSION, SOAP_URL, SOAP_USER_AGENT } from "~/core/constants";
+import type { Request } from "@literate.ink/utilities";
+import type { Configuration, Identification, Profile } from "~/models";
+import { defaultFetcher, type Fetcher, findValueBetween, getHeaderFromResponse } from "@literate.ink/utilities";
 
 import { XMLParser } from "fast-xml-parser";
-import { xml } from "~/core/xml";
+import { CLIENT_TYPE, SERVICE_VERSION, SOAP_URL, SOAP_USER_AGENT } from "~/core/constants";
 
+import { xml } from "~/core/xml";
 import { decodeBalance } from "~/decoders/balance";
-import type { Profile, Identification, Configuration } from "~/models";
 // import { setDeviceToken } from "./private/set-device-token";
 
 export const extractActivationURL = async (url: string, fetcher: Fetcher = defaultFetcher): Promise<string> => {
-  let response = await fetcher({ url: new URL(url), redirect: "manual" });
+  const response = await fetcher({ redirect: "manual", url: new URL(url) });
   const location = getHeaderFromResponse(response, "Location");
 
   if (!location) {
@@ -19,6 +20,7 @@ export const extractActivationURL = async (url: string, fetcher: Fetcher = defau
   return location;
 };
 
+// eslint-disable-next-line ts/explicit-function-return-type
 export const tokenize = async (url: string, fetcher: Fetcher = defaultFetcher) => {
   // encoded like this:
   // izly://SBSCR/<identifier>/<code>
@@ -42,16 +44,16 @@ export const tokenize = async (url: string, fetcher: Fetcher = defaultFetcher) =
   `);
 
   const request: Request = {
-    url: SOAP_URL,
-    headers: {
-      "User-Agent": SOAP_USER_AGENT,
-      "SOAPAction": "Service/Logon",
-      "Content-Type": "text/xml;charset=utf-8",
-      "clientVersion": SERVICE_VERSION,
-      "smoneyClientType": CLIENT_TYPE
-    },
     content: body,
-    method: "POST"
+    headers: {
+      "clientVersion": SERVICE_VERSION,
+      "Content-Type": "text/xml;charset=utf-8",
+      "smoneyClientType": CLIENT_TYPE,
+      "SOAPAction": "Service/Logon",
+      "User-Agent": SOAP_USER_AGENT
+    },
+    method: "POST",
+    url: SOAP_URL
   };
 
   const response = await fetcher(request);
@@ -62,54 +64,54 @@ export const tokenize = async (url: string, fetcher: Fetcher = defaultFetcher) =
   const decoded = xml.from_entities(result);
   const parser = new XMLParser({
     numberParseOptions: {
-      leadingZeros: true,
       hex: true,
+      leadingZeros: true,
       skipLike: /[0-9]/
     }
   });
   const { Logon } = parser.parse(decoded);
 
   const output = {
+    balance: decodeBalance(Logon.UP),
+
     configuration: {
       currency: Logon.CUR,
-      paymentMinimum: parseFloat(Logon.P2PPAYMIN),
-      paymentMaximum: parseFloat(Logon.P2PPAYMAX),
-      paymentPartMinimum: parseFloat(Logon.P2PPAYPARTMIN),
-      paymentPartMaximum: parseFloat(Logon.P2PPAYPARTMAX),
-
-      moneyInMinimum: parseFloat(Logon.MONEYINMIN),
       moneyInMaximum: parseFloat(Logon.MONEYINMAX),
+      moneyInMinimum: parseFloat(Logon.MONEYINMIN),
+      moneyOutMaximum: parseFloat(Logon.MONEYOUTMAX),
       moneyOutMinimum: parseFloat(Logon.MONEYOUTMIN),
-      moneyOutMaximum: parseFloat(Logon.MONEYOUTMAX)
+
+      paymentMaximum: parseFloat(Logon.P2PPAYMAX),
+      paymentMinimum: parseFloat(Logon.P2PPAYMIN),
+      paymentPartMaximum: parseFloat(Logon.P2PPAYPARTMAX),
+      paymentPartMinimum: parseFloat(Logon.P2PPAYPARTMIN)
     } as Configuration,
 
     identification: {
-      identifier: Logon.UID,
+      accessToken: Logon.OAUTH.ACCESS_TOKEN,
 
-      userID: Logon.USER_ID,
-      sessionID: Logon.SID,
-      seed: Logon.SEED,
+      accessTokenExpiresIn: parseInt(Logon.OAUTH.EXPIRES_IN),
+      counter: 0,
+      identifier: Logon.UID,
       nsse: Logon.NSSE,
 
-      token: Logon.TOKEN,
-
-      userPublicID: Logon.USER_PUBLIC_ID,
       qrCodePrivateKey: Logon.QR_CODE_PRIVATE_KEY,
 
-      accessToken: Logon.OAUTH.ACCESS_TOKEN,
-      accessTokenExpiresIn: parseInt(Logon.OAUTH.EXPIRES_IN),
       refreshToken: Logon.OAUTH.REFRESH_TOKEN,
+      seed: Logon.SEED,
 
-      counter: 0
+      sessionID: Logon.SID,
+      token: Logon.TOKEN,
+      userID: Logon.USER_ID,
+
+      userPublicID: Logon.USER_PUBLIC_ID
     } as Identification,
-
-    balance: decodeBalance(Logon.UP),
 
     profile: {
       email: Logon.EMAIL,
       firstName: Logon.FNAME,
-      lastName: Logon.LNAME,
-      identifier: Logon.ALIAS
+      identifier: Logon.ALIAS,
+      lastName: Logon.LNAME
     } as Profile
   };
 

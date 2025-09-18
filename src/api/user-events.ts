@@ -1,29 +1,30 @@
+import type { Error as ServerError } from "~/definitions/error";
 import { defaultFetcher, type Fetcher, type Request } from "@literate.ink/utilities";
 import { CLIENT_TYPE, createRouteREST, SERVICE_VERSION } from "~/core/constants";
-import { ReauthenticateError, type Identification } from "~/models";
-import type { Error as ServerError } from "~/definitions/error";
+import { type Identification, ReauthenticateError } from "~/models";
 
+// eslint-disable-next-line ts/explicit-function-return-type
 export const userEvents = async (identification: Identification, itemPerPage = 10, page = 0, fetcher: Fetcher = defaultFetcher) => {
   const request: Request = {
-    url: createRouteREST("GetUserEventList"),
-    method: "POST",
     content: JSON.stringify({
-      page,
-      itemPerPage
+      itemPerPage,
+      page
     }),
     headers: {
-      version: "2.0",
-      channel: "AIZ",
-      format: "T",
-      model: "A",
-      clientVersion: SERVICE_VERSION,
-      smoneyClientType: CLIENT_TYPE,
-      language: "fr",
-      userId: identification.identifier,
-      sessionId: identification.sessionID,
       "Authorization": `Bearer ${identification.accessToken}`,
-      "Content-Type": "application/json"
-    }
+      "channel": "AIZ",
+      "clientVersion": SERVICE_VERSION,
+      "Content-Type": "application/json",
+      "format": "T",
+      "language": "fr",
+      "model": "A",
+      "sessionId": identification.sessionID,
+      "smoneyClientType": CLIENT_TYPE,
+      "userId": identification.identifier,
+      "version": "2.0"
+    },
+    method: "POST",
+    url: createRouteREST("GetUserEventList")
   };
 
   const response = await fetcher(request);
@@ -32,9 +33,9 @@ export const userEvents = async (identification: Identification, itemPerPage = 1
       /**
        * formatted as `le D/M/YYYY à H:mm AM/PM`
        */
-      EventFormattedDate: string
-      EventMessage: string
-    }>
+      EventFormattedDate: string;
+      EventMessage: string;
+    }>;
   } | ServerError;
 
   if ("ErrorMessage" in json) {
@@ -46,4 +47,3 @@ export const userEvents = async (identification: Identification, itemPerPage = 1
 
   return json.GetUserEventListResult;
 };
-

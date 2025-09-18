@@ -1,7 +1,7 @@
 import * as izly from "../src";
 import { read } from "./_persisted-session";
 
-void async function main () {
+void (async function main() {
   const identification = await read();
 
   const payments = await izly.operations(identification, izly.TransactionGroup.Payments, 5);
@@ -10,7 +10,7 @@ void async function main () {
   console.info("--- Payments");
   for (const payment of payments) {
     const priceAsString = `${payment.amount.toPrecision(3)} EUR`;
-    console.info("Paid", priceAsString, "the", payment.date.toLocaleString("fr-FR") );
+    console.info("Paid", priceAsString, "the", payment.date.toLocaleString("fr-FR"));
     console.info("=> (type):", izly.OperationType[payment.type], `(${payment.type})`);
     console.info("=> (status):", izly.TransactionGroupStatus[payment.status], `(${payment.status})`);
   }
@@ -22,4 +22,4 @@ void async function main () {
     console.info("=> (type):", izly.OperationType[operation.type], `(${operation.type})`);
     console.info("=> (status):", izly.TransactionGroupStatus[operation.status], `(${operation.status})`);
   }
-}();
+}());
