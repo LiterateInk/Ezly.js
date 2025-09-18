@@ -1,0 +1,14 @@
+{
+  "name": "Ezly",
+  "hideGenerator": true,
+  "cleanOutputDir": true,
+  "customFooterHtml": "<a href=\"https://www.netlify.com\"><img src=\"https://www.netlify.com/assets/badges/netlify-badge-dark.svg\" alt=\"Deploys by Netlify\" /></a>",
+  "entryPoints": ["src/index.ts"],
+  "basePath": "src",
+  "plugin": ["typedoc-plugin-remove-3dots-default-value"],
+  "navigationLinks": {
+    "Website": "https://ezly.docs.literate.ink/",
+    "GitHub": "https://github.com/LiterateInk/Ezly.js",
+    "Discord": "https://literate.ink/discord"
+  }
+}
