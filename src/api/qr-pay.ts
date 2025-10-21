@@ -1,8 +1,8 @@
 import type { Identification } from "~/models";
-import { p256 } from "@noble/curves/nist";
-import { sha256 } from "@noble/hashes/sha2";
+import { p256 } from "@noble/curves/nist.js";
+import { sha256 } from "@noble/hashes/sha2.js";
 
-import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils";
+import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { ECPrivateKey } from "@peculiar/asn1-ecc";
 import { PrivateKeyInfo } from "@peculiar/asn1-pkcs8";
 

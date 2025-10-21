@@ -1,5 +1,5 @@
 import type { Identification } from "~/models";
-import { utf8ToBytes } from "@noble/hashes/utils";
+import { utf8ToBytes } from "@noble/hashes/utils.js";
 import { base64, base64url } from "@scure/base";
 import { hashWithHMAC } from "~/core/hmac";
 import { packBigEndian } from "~/core/pack";
