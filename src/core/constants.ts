@@ -1,4 +1,4 @@
-export const SERVICE_VERSION = "6.3";
+export const SERVICE_VERSION = "7.0";
 export const CLIENT_TYPE = "PART";
 
 export const SOAP_URL = new URL("https://soap.izly.fr/Service.asmx");
