@@ -1,6 +1,5 @@
 import type { Identification } from "~/models";
 import { p256 } from "@noble/curves/nist.js";
-import { sha256 } from "@noble/hashes/sha2.js";
 
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { ECPrivateKey } from "@peculiar/asn1-ecc";
@@ -28,8 +27,7 @@ const sign = (content: Uint8Array, keyInfo: string): Uint8Array => {
   const keys = AsnParser.parse(info.privateKey.buffer, ECPrivateKey);
   const privateKey = new Uint8Array(keys.privateKey.buffer);
 
-  const hash = sha256.create().update(content).digest();
-  const signed = p256.sign(hash, privateKey, { format: "der" });
+  const signed = p256.sign(content, privateKey, { format: "der" });
 
   // Here's how we can debug this function...
   // Prerequisites: have the same inputs as the app when generating the QR code,
@@ -42,10 +40,10 @@ const sign = (content: Uint8Array, keyInfo: string): Uint8Array => {
   //
   // 2. Grab the last part of the QR code payload
   // -  so the part we're generating in this function...
-  // const signedFromKotlin = base64.decode("MEUCIG1jEvjmNjx8PWK7u5BwaMverup7vvzSVkI6TYoyRh22AiEA4lmlaaOhu18E3oMo6uMmVQoFzShMZU0Sy8EhaOPbgQQ=");
+  // const signedFromKotlin = base64.decode("MEQCIDQDJaRdEkAmtoucOSiKVNazGfUOHHlsmOq8ZQWdXrbWAiA2nYsGAqKpFYlINKaT3YTUsnZfKhJslzh8yrZ/5QvzOg==");
   //
   // 3. Compare the app's generated signature with the hash we generated !
-  // const verified = p256.verify(signedFromKotlin, hash, publicKey);
+  // const verified = p256.verify(signedFromKotlin, content, publicKey, { format: "der" });
   // console.log("verified:", verified);
   //
   // When `verified` is true, the signature is valid.
