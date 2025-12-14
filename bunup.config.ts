@@ -1,14 +1,16 @@
-import { defineConfig } from "tsdown";
+import { defineConfig } from "bunup";
 
 export default defineConfig({
   clean: true,
-  dts: true,
+  dts: {
+    inferTypes: true
+  },
   entry: [
     "src/index.ts"
   ],
   format: ["cjs", "esm"],
   minify: true,
   outDir: "dist",
-  sourcemap: true,
-  treeshake: true
+  splitting: false,
+  target: "browser"
 });
