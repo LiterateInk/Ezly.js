@@ -1,4 +1,4 @@
-<img alt="Ezly: An easy API wrapper for Izly" src=".github/assets/banner.svg" width="100%" />
+<img alt="Ezly: An easy API wrapper for Izly" src="https://raw.githubusercontent.com/LiterateInk/Ezly.js/main/.github/assets/banner.svg" width="100%" />
 
 _This library **is not** affiliated with [Izly](https://www.izly.fr/) or [Les Crous](https://www.lescrous.fr/) in any way._
 
@@ -6,32 +6,14 @@ _This library **is not** affiliated with [Izly](https://www.izly.fr/) or [Les Cr
 
 Izly is a French electronic wallet service that allows students to pay for their meals in university restaurants, cafeterias, and other services.
 
-## Installation
+## Get Started
 
-Use your favorite package manager to install this library from NPM.
+Jump right in by following the [**Installation Guide**](https://ezly.docs.literate.ink/guides/getting-started/installation/) to set things up.
 
-```bash
-# pnpm
-pnpm add ezly
+Once in, explore annotated examples in the [**official documentation**](https://ezly.docs.literate.ink/guides/examples/) or check out the [`examples` folder on GitHub](https://github.com/LiterateInk/Ezly.js/tree/main/examples). You can also browse the full [**API Reference**](https://js.ezly.docs.literate.ink/) for details.
 
-# Yarn
-yarn add ezly
+Still stuck ? [Open an issue](https://github.com/LiterateInk/Ezly.js/issues) or join the conversation on [Discord](https://literate.ink/discord) and ask for help in the appropriate channel.
 
-# npm
-npm add ezly
+## License
 
-# Bun
-bun add ezly
-```
-
-## Documentation
-
-You can find documentation with guides at [docs.literate.ink/ezly](https://docs.literate.ink/ezly).
-
-If it's not enough you can also take a look at the [`examples`](https://github.com/LiterateInk/Ezly/tree/js/examples) folder in the GitHub repository for inspiration.
-
-If none of those are helpful, you can always [open an issue](https://github.com/LiterateInk/Ezly/issues) to ask for help or join the [LiterateInk Discord server](https://literate.ink/discord).
-
-## Acknowledgements
-
-- [`IzlyProtocolDocumentation`](https://github.com/IzlyOpenSource/IzlyProtocolDocumentation) by [`@IzlyOpenSource`](https://github.com/IzlyOpenSource)
+This project is licensed under the GPL-3.0 License - see the [LICENSE.md](LICENSE.md) file for details.

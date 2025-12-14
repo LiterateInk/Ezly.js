@@ -8,8 +8,8 @@ authors:
   - name: LiterateInk
     website: "https://literate.ink"
     email: contact@literate.ink
-repository-code: 'https://github.com/LiterateInk/Ezly'
-url: 'https://docs.literate.ink/ezly'
+repository-code: 'https://github.com/LiterateInk/Ezly.js'
+url: 'https://ezly.docs.literate.ink/'
 repository-artifact: 'https://www.npmjs.com/package/ezly'
 abstract: >-
   An easy API wrapper for Izly.
